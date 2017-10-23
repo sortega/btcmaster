@@ -147,7 +147,8 @@ $ bitcoin-cli getrawtransaction 0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb
 ```
 - Parsed transaction:
 ```bash
-$ bitcoin-cli getrawtransaction 0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098 1
+$ bitcoin-cli getrawtransaction \
+  0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098 1
 {
   "txid": "0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098",
   "hash": "0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098",
@@ -184,6 +185,22 @@ $ bitcoin-cli getrawtransaction 0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb
 }
 ```
 
+---
+
+# RPC interface
+
+- `bitcoin-cli` is just a wrapper to a JSON-RPC endpoint
+- port 8332 by default
+- sample request:
+```bash
+$ curl --user rpc  --data-binary '{
+    "jsonrpc": "1.0",
+    "method": "getrawtransaction", 
+    "params": ["0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098", 1] 
+  }' \
+  -H 'content-type: text/plain;' \
+  http://127.0.0.1:8332/
+```
 
 ???
 
