@@ -17,7 +17,21 @@ class: impact
 
 ---
 
-# Anatomía de una trasacción
+# Public key cryptography
+
+- Not used to encrypt Bitcoin messages!
+   - Bitcoin is pseudonym after all 
+   - All is validated with cryptographic hashes and digital signatures
+- Key pairs
+   - Private key: 256 random bits
+   - Public key: TODO
+- Digital signature
+- Relationship between public key and address
+  - `Base58Check(Sha256(PubKey))`
+
+---
+
+# Anatomy of a transaction
 
 TODO
 
@@ -201,6 +215,15 @@ $ curl --user rpc  --data-binary '{
   -H 'content-type: text/plain;' \
   http://127.0.0.1:8332/
 ```
+
+---
+
+# Playing with keys
+
+- Check wallet status: `bitcoin-cli getwalletinfo`
+- Generate an address: `bitcoin-cli getnewaddress`
+- Get private key: `bitcoin-cli dumpprivkey <address>`
+
 
 ???
 
