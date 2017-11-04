@@ -17,17 +17,116 @@ class: impact
 
 ---
 
+# Bitcoin under the microscope
+
+- Bitcoin is:
+  - the name of the network
+--
+
+  - the name of the token
+--
+
+  - the name of an implementation of the consensus rules
+--
+
+  - **programmable money**
+
+---
+
+# Bitcoin architecture
+
+TODO: diagram
+
+---
+
+# Exploration tools
+## Bitcoin itself
+- Full bitcoin core
+- Regnet in docker
+- bitcoin-cli
+
+## Scripting tools
+- bitcoin explorer, `bx`
+    ([doc](https://github.com/libbitcoin/libbitcoin-explorer/wiki))
+- `python-bitcoinlib`
+
+---
+
 # Public key cryptography
 
 - Not used to encrypt Bitcoin messages!
-   - Bitcoin is pseudonym after all 
+   - Bitcoin is pseudonym after all
    - All is validated with cryptographic hashes and digital signatures
 - Key pairs
-   - Private key: 256 random bits
-   - Public key: TODO
+   - Private key: 256 random bits (`bx seed`)
+   - Correspoing elliptic curve point (`bx seed | bx ec-new`)
+   - Public key (`bx seed | bx ec-new | bx ec-to-public`)
 - Digital signature
+   - `bx message-sign $PRIVKEY "learning about crypto"`
+   - `bx message-validate $ADDRESS $SIGNATURE "learning about crypto"`
+
+---
+
+# Address encodings and types
+## Base 58 encoding
+
+- No ambiguous characters:
+  - `123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz`
+- Sorter than hex
+- `bx base58-encode FFF0`
+- `bx base58-decode LUf`
+
+---
+
+# Address encodings and types
+## Base 58 check encoding
+
+- More robust thanks to an added hash
+- Tagged with a version
+- `bx base58check-encode --version 0 1A06`
+- `bx base58check-decode 1DxgZszAD`
+
+---
+
+# Address encodings and types
+## Public keys
+
 - Relationship between public key and address
-  - `Base58Check(Sha256(PubKey))`
+  - `Base58Check(Sha256(PubKey), version)`
+  - [Comprehensive list](https://en.bitcoin.it/wiki/List_of_address_prefixes)
+  - How to create a normal address:
+
+TODO: check these scripts
+
+```
+EC=`bx seed | bx ec-new`
+PUBLIC=`bx ec-to-public $EC`
+bx base58check-encode --version 00 $PUBLIC
+ADDRESS=`bx ec-to-public $EC | bx ec-to-address --version 0`
+bitcoin-cli validateaddress $ADDRESS
+```
+
+???
+
+Using regtest-in-a-box:
+- Use testnet version `--version 196`
+- `bitcoin-cli -datadir=. validateaddress $ADDRESS`
+
+---
+
+# Address encodings and types
+## Private keys
+
+- Either compressed or not
+  - Very confusing as compressed keys are longer!
+- 
+
+---
+
+# Key encodings
+
+- WIF
+- WIF-compressed
 
 ---
 
