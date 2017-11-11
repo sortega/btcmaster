@@ -41,13 +41,22 @@ TODO: diagram
 
 # Exploration tools
 ## Bitcoin itself
-- Full bitcoin core
+- Full bitcoin node
 - Regnet in docker
 - bitcoin-cli
 
+???
+
+- TODO: dyndns to full node
+- TODO: howto regnet in docker
+
+---
+
+# Exploration tools
 ## Scripting tools
-- bitcoin explorer, `bx`
-    ([doc](https://github.com/libbitcoin/libbitcoin-explorer/wiki))
+- bitcoin explorer, aka `bx`
+  - `brew install libbitcoin-explorer` TODO: ubuntu?
+  - Official [docs](https://github.com/libbitcoin/libbitcoin-explorer/wiki)
 - `python-bitcoinlib`
 
 ---
