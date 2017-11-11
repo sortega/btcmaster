@@ -9,14 +9,12 @@ layout: true
 ]
 
 ---
-
 class: impact
 
 # {{title}}
 ## {{subtitle}}
 
 ---
-
 # Bitcoin under the microscope
 
 - Bitcoin is:
@@ -32,13 +30,19 @@ class: impact
   - **programmable money**
 
 ---
+# Bitcoin under the microscope
 
-# Bitcoin architecture
+![bitcoin network](images/transaction.png)
+--
 
-TODO: diagram
+- There is way more than the final user sees
 
 ---
+# Bitcoin under the microscope
 
+![bitcoin network](images/network.png)
+
+---
 # Exploration tools
 ## Bitcoin itself
 - Full bitcoin node
@@ -60,18 +64,121 @@ TODO: diagram
 - `python-bitcoinlib`
 
 ---
+class: impact
 
+# My dev full node!
+
+---
+
+# Getting bitcoin core
+
+ - `git clone git@github.com:bitcoin/bitcoin.git` and follow instructions
+ - OS X: `brew install bitcoin`
+ - Ubuntu:
+   ```bash
+   $ apt-add-repository ppa:bitcoin/bitcoin
+   $ apt-get install bitcoind
+   ```
+
+---
+# Initial bitcoin.conf
+ - At `~/Library/Application Support/Bitcoin/` or `~/.bitcoin`
+
+--
+ - Minimal settings:
+```conf
+server=1
+rpcuser=rpc
+rpcpassword=secret
+txindex=1
+```
+
+---
+# Initial bitcoin.conf
+ - Other interesting settings:
+   - `dbcache`: memory (in MB) for the tx database
+   - `par`: threads used for validation
+   - `reindex`: rebuild datastructures by replaying blocks
+
+---
+# Starting up
+
+ - Debugging: `bitcoind -printtoconsole`
+ - Background: `bitcoind -daemon`
+   - Check `$DATADIR/bitcoin.pid`
+   - Logs at `$DATADIR/debug.log`
+ - Data directory (by default):
+   - OS X: `~/Library/Application Support/Bitcoin/`
+   - Ubuntu: `~/.bitcoin/`
+
+---
+# Bitcoin data directory (I)
+
+ - P2P info:
+    - `peers.dat`: addresses for fast reconnects
+    - `banlist.dat`
+ - Blockchain:
+    - `mempool.dat`
+    - `blocks/`: actual blocks and a leveldb with metadata
+    - `chainstate/`: UXTOs and other tracked data
+ - General lock: `.lock`
+
+---
+# Bitcoin data directory (II)
+
+ - Berkley DB:
+    - `__db.xxx`
+    - `database/`
+ - Logs
+    - db.log
+    - debug.log
+ - Use as wallet:
+   - `wallet.dat`
+   - `fee_estimates.dat`
+
+---
+class: impact
+
+# Bitcoin speaks crypto
+
+---
 # Public key cryptography
 
 - Not used to encrypt Bitcoin messages!
-   - Bitcoin is pseudonym after all
-   - All is validated with cryptographic hashes and digital signatures
+- Bitcoin is pseudonym after all
+- All is validated with cryptographic hashes and digital signatures
+- Based on the secp256k1 curve
+
+---
+# Public key cryptography
+
+<img src="images/elliptic_curve.png" alt="elliptic curve" style="width: 40%"/>
+
+---
+# Public key cryptography
+
+<img src="images/elliptic_operations.png" alt="elliptic curve operations" style="width: 40%"/>
+
+---
+# Public key cryptography
+
+<img src="images/discrete_elliptic_curve.png" alt="discrete elliptic" style="width: 40%"/>
+
+---
+# Public key cryptography
+
 - Key pairs
    - Private key: 256 random bits (`bx seed`)
-   - Correspoing elliptic curve point (`bx seed | bx ec-new`)
-   - Public key (`bx seed | bx ec-new | bx ec-to-public`)
+   - Correspoing elliptic curve point (`bx ec-new $SEED`)
+   - Public key (`bx ec-to-public $PRIVKEY`)
+   - Address (`bx ec-to-address --version 0 $PUBLIC`)
+   - Private key in WIF format: (`bx ec-to-wif $PRIVKEY`)
+
+---
+# Public key cryptography
+
 - Digital signature
-   - `bx message-sign $PRIVKEY "learning about crypto"`
+   - `bx message-sign $WIF "learning about crypto"`
    - `bx message-validate $ADDRESS $SIGNATURE "learning about crypto"`
 
 ---
@@ -142,72 +249,6 @@ Using regtest-in-a-box:
 # Anatomy of a transaction
 
 TODO
-
----
-
-class: impact
-
-# My dev full node!
-
----
-
-# Getting bitcoin core
-
- - `git clone git@github.com:bitcoin/bitcoin.git` and follow instructions
- - OS X: `brew install bitcoin`
- - Linux: `apt-get install bitcoind`
-
----
-
-# Initial bitcoin.conf
-
- - At `~/Library/Application Support/Bitcoin/` or `~/.bitcoin`
-
---
-
- - Contents:
-```conf
-server=1
-rpcuser=rpc
-rpcpassword=secret
-txindex=1
-```
-
----
-
-# Starting up
-
- - Debugging: `bitcoind -printtoconsole`
- - Background: `bitcoind -daemon`
-   - Check `$DATADIR/bitcoin.pid`
-   - Logs at `$DATADIR/debug.log`
-
----
-
-# Bitcoin data directory (I)
-
- - P2P info:
-    - `addr.dat`
-    - `peers.dat`
-    - `banlist.dat`
- - Blockchain:
-    - `mempool.dat`
-    - `blocks/`
-    - `chainstate/`
- - General lock: `.lock`
----
-
-# Bitcoin data directory (II)
-
- - Berkley DB:
-    - `__db.xxx`
-    - `database/`
- - Logs
-    - db.log
-    - debug.log
- - Use as wallet:
-   - `wallet.dat`
-   - `fee_estimates.dat`
 
 ---
 
