@@ -15,6 +15,17 @@ class: impact
 ## {{subtitle}}
 
 ---
+# Let's start with a quiz
+
+- I know Bitcoin since...
+
+--
+- The reason I'm looking into blockchain is...
+
+--
+- I have/haven't technical background
+
+---
 # Bitcoin under the microscope
 
 - Bitcoin is:
@@ -33,8 +44,11 @@ class: impact
 # Bitcoin under the microscope
 
 ![bitcoin network](images/transaction.png)
---
 
+--
+- [Some transaction](https://blockchain.info/es/tx/012d4328faea5db184fd4d020c8b36b390a75909e47c5bc02b1654bd766195e7)
+
+--
 - There is way more than the final user sees
 
 ---
@@ -46,8 +60,11 @@ class: impact
 # Exploration tools
 ## Bitcoin itself
 - Full bitcoin node
-- Regnet in docker
 - bitcoin-cli
+- Regnet
+
+--
+<img src="mining_rig.jpg" alt="our mining setup" style="float: right; width:40%"/>
 
 ???
 
@@ -59,7 +76,10 @@ class: impact
 # Exploration tools
 ## Scripting tools
 - bitcoin explorer, aka `bx`
-  - `brew install libbitcoin-explorer` TODO: ubuntu?
+  - OS X: `brew install libbitcoin-explorer`
+  - Other:
+     - Visit https://github.com/libbitcoin/libbitcoin-explorer/wiki/Download-BX
+     - Download binary, then save at `/usr/local/bin` with exec permission
   - Official [docs](https://github.com/libbitcoin/libbitcoin-explorer/wiki)
 - `python-bitcoinlib`
 
@@ -77,6 +97,7 @@ class: impact
  - Ubuntu:
    ```bash
    $ apt-add-repository ppa:bitcoin/bitcoin
+   $ apt-get update
    $ apt-get install bitcoind
    ```
 
@@ -137,6 +158,21 @@ txindex=1
    - `fee_estimates.dat`
 
 ---
+# Regnet in a box
+
+- Regnet is a test mode with minimum difficulty
+- You can generate blocks at will
+- You need at least two bitcoin processes running
+- Ready for you to use from https://github.com/freewil/bitcoin-testnet-box
+
+---
+# Regnet in a box (II)
+
+- `git clone https://github.com/freewil/bitcoin-testnet-box.git regnet`
+- `make start`
+- `make getinfo`
+
+---
 class: impact
 
 # Bitcoin speaks crypto
@@ -182,7 +218,20 @@ class: impact
    - `bx message-validate $ADDRESS $SIGNATURE "learning about crypto"`
 
 ---
+# Cryptographic hash functions
 
+- A hash function
+  - maps data of any length into a fixed number of bits (bytes)
+  - in a pseudorandom way (change anything and half of the bytes change)
+  - **cryptographic**: you cannot find data with a given hash
+
+--
+- Used in bitcoin
+  - SHA-256: `echo hola | sha256sum`
+  - RIPEMD-160: `echo 1234 | bx ripemd160`
+  - e.g. to link the [chain of blocks](https://en.bitcoin.it/wiki/Block_hashing_algorithm)
+
+---
 # Address encodings and types
 ## Base 58 encoding
 
@@ -193,7 +242,6 @@ class: impact
 - `bx base58-decode LUf`
 
 ---
-
 # Address encodings and types
 ## Base 58 check encoding
 
@@ -208,17 +256,15 @@ class: impact
 ## Public keys
 
 - Relationship between public key and address
-  - `Base58Check(Sha256(PubKey), version)`
+  - `Base58Check(Ripemd160(Sha256(PubKey)), version)`
   - [Comprehensive list](https://en.bitcoin.it/wiki/List_of_address_prefixes)
   - How to create a normal address:
-
-TODO: check these scripts
 
 ```
 EC=`bx seed | bx ec-new`
 PUBLIC=`bx ec-to-public $EC`
-bx base58check-encode --version 00 $PUBLIC
-ADDRESS=`bx ec-to-public $EC | bx ec-to-address --version 0`
+ADDRESS=`bx sha256 $PUBLIC | bx ripemd160 | \
+         bx base58check-encode --version 0`
 bitcoin-cli validateaddress $ADDRESS
 ```
 
@@ -382,3 +428,11 @@ Ideas:
    en linux cosas
  - Tener un nodo de bitcoin funcionando y compartirlo para el resto de la
    gente (o usar uno público)
+
+---
+
+# TODO list
+
+- SPV
+- Merkle trees
+- State channels
