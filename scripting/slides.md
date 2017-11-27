@@ -64,7 +64,8 @@ class: impact
 - Regnet
 
 --
-<img src="mining_rig.jpg" alt="our mining setup" style="float: right; width:40%"/>
+<img src="images/mining_rigs.jpg" alt="our mining setup"
+     style="float: right; width:35%; position: relative; top: -200px"/>
 
 ???
 
@@ -82,6 +83,7 @@ class: impact
      - Download binary, then save at `/usr/local/bin` with exec permission
   - Official [docs](https://github.com/libbitcoin/libbitcoin-explorer/wiki)
 - `python-bitcoinlib`
+- `bitcoinj`
 
 ---
 class: impact
@@ -193,12 +195,34 @@ class: impact
 ---
 # Public key cryptography
 
-<img src="images/elliptic_operations.png" alt="elliptic curve operations" style="width: 40%"/>
+<img src="images/elliptic_operations.png" alt="elliptic curve operations"
+     style="width: 40%; float: left; margin-right: 2em"/>
+--
+Keys are points **within the curve**.
+
+
+--
+You can infer the point with just x and the sign (**compressed keys**).
+
+
+--
+You **can't get** from the public to the private key.
 
 ---
 # Public key cryptography
 
-<img src="images/discrete_elliptic_curve.png" alt="discrete elliptic" style="width: 40%"/>
+<img src="images/discrete_elliptic_curve.png" alt="discrete elliptic"
+     style="width: 40%; float: left; margin-right: 2em"/>
+
+--
+
+- Private key holder:
+   - able to sign messages
+   - able to recive encrypted information
+
+- Public key holders (everyone):
+   - able to verify signatures
+   - able to send encrypted information
 
 ---
 # Public key cryptography
@@ -279,22 +303,52 @@ Using regtest-in-a-box:
 # Address encodings and types
 ## Private keys
 
-- Either compressed or not
+- WIF: Wallet import format:
+  - Uncompressed `base58check(version=0x80, point)`
+  - Compressed `base58check(version=0x80, point || 0x01)`
+
+--
   - Very confusing as compressed keys are longer!
-- 
+
+--
+```bash
+$ WIF=`bx ec-to-wif $EC`
+$ bx base58check-decode $WIF
+{
+    checksum 2706479491
+    payload b90b254bf ... 0e8b1748a72aa2409a862413ee01
+    version 128
+}
+```
 
 ---
-
-# Key encodings
-
-- WIF
-- WIF-compressed
-
----
+class: impact
 
 # Anatomy of a transaction
 
-TODO
+---
+
+# Information in a transaction
+
+- Version: 1 so far
+- Lock time
+
+--
+- Inputs: pointers to funds to spend and **witness** information. It is empty
+    for the coinbase.
+  - TX hash: points to a previous transaction
+  - Index: which output to spend
+  - Script: instructions to unlock the output
+  - Sequence: flags for advanced TXs
+
+--
+- Outputs: what to do with the funds
+  - Value
+  - Script: cryto puzzle to solve
+
+
+--
+Everything else is an **abstraction in our head!**
 
 ---
 
@@ -352,47 +406,31 @@ Get transaction details:
 - Raw transaction:
 ```bash
 $ bitcoin-cli getrawtransaction 0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098
-01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000
+01000000010000000000000000000000000000000000 \
+000000000000000000000000000000ffffffff0704ff \
+ff001d0104ffffffff0100f2052a0100000043410496 \
+b538e853519c726a2c91e61ec11600ae1390813a627c \
+66fb8be7947be63c52da7589379515d4e0a604f81417 \
+81e62294721166bf621e73a82cbf2342c858eeac0000 \
+0000
 ```
+
+---
+
+# bitcoin-cli is your friend (IV)
 - Parsed transaction:
 ```bash
 $ bitcoin-cli getrawtransaction \
   0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098 1
 {
-  "txid": "0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098",
-  "hash": "0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098",
   "version": 1,
-  "size": 134,
-  "vsize": 134,
-  "locktime": 0,
-  "vin": [
-    {
-      "coinbase": "04ffff001d0104",
-      "sequence": 4294967295
-    }
-  ],
-  "vout": [
-    {
-      "value": 50.00000000,
-      "n": 0,
-      "scriptPubKey": {
-        "asm": "0496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858ee OP_CHECKSIG",
-        "hex": "410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac",
-        "reqSigs": 1,
-        "type": "pubkey",
-        "addresses": [
-          "12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX"
-        ]
-      }
-    }
-  ],
-  "hex": "01000000010000000000000000000000000000000000000000000000000000000000000000ffffffff0704ffff001d0104ffffffff0100f2052a0100000043410496b538e853519c726a2c91e61ec11600ae1390813a627c66fb8be7947be63c52da7589379515d4e0a604f8141781e62294721166bf621e73a82cbf2342c858eeac00000000",
-  "blockhash": "00000000839a8e6886ab5951d76f411475428afc90947ee320161bbf18eb6048",
+  ...
   "confirmations": 186616,
   "time": 1231469665,
   "blocktime": 1231469665
 }
 ```
+- Also with bx: `bx tx-decode $RAW_TX`
 
 ---
 
@@ -402,37 +440,37 @@ $ bitcoin-cli getrawtransaction \
 - port 8332 by default
 - sample request:
 ```bash
-$ curl --user rpc  --data-binary '{
+$ curl  --data-binary '{
     "jsonrpc": "1.0",
     "method": "getrawtransaction", 
     "params": ["0e3e2357e806b6cdb1f70b54c3a3a17b6714ee1f0e68bebb44a74b1efd512098", 1] 
   }' \
   -H 'content-type: text/plain;' \
-  http://127.0.0.1:8332/
+  http://rpc:secret@127.0.0.1:8332/
 ```
 
 ---
 
-# Playing with keys
+# Playing with the built-in wallet
 
 - Check wallet status: `bitcoin-cli getwalletinfo`
 - Generate an address: `bitcoin-cli getnewaddress`
 - Get private key: `bitcoin-cli dumpprivkey <address>`
+- TODO: send money, check the pending pool and the mempool
 
+---
 
-???
-
-Ideas:
-
- - Tener mi propia imagen docker con todo instalado o explicar cómo instalar
-   en linux cosas
- - Tener un nodo de bitcoin funcionando y compartirlo para el resto de la
-   gente (o usar uno público)
+# Rules to validate a transaction
 
 ---
 
 # TODO list
 
+- Sequence number
+- Standard transactions
+- P2SH
+- Most common opcodes
+- Other common transactions
 - SPV
 - Merkle trees
 - State channels
